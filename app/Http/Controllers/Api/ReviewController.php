@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\Review;
 use App\Models\Service;
@@ -17,27 +18,37 @@ class ReviewController extends Controller
     public function store(Request $request, $type, $id)
     {
 
-        $validated = $request->validate([
+       $request->validate([
             'comment' => 'required|string|max:1000',
             'rating'  => 'required|string|min:1|max:5'
         ]);
 
-        $model = $this->SelectModel($type);
+
+        $modelclass = $this->SelectModel($type);
 
 
-        $review = $model::findOrFail($id);
-        Review::where([
+
+        $reviewexist =  Review::where([
             'user_id'         => Auth::user()->id,
-            'reviewable_type' => $model,
+            'reviewable_type' => $type,
             'reviewable_id'   => $id,
-        ]);
+        ])->first();
 
-        $review->reviews()->create([
+        if ($reviewexist) {
+
+            return response()->json(['message' => 'You can only review this item once', 'status' => 'error', 'code' => 200]);
+        }
+
+        $model = $modelclass::findOrFail($id);
+
+
+        $review =  $model->reviews()->create([
             'comment' => $request->comment,
             'rating'  => $request->rating,
             'user_id' => Auth::user()->id
         ]);
-        return 'sss';
+
+        return response()->json(['data' => $review, 'message' => 'Created Success ', 'status' => 'success', 'code' => 200]);
     }
     public function SelectModel($type)
     {

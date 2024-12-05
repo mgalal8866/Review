@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\Api\ReviewController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
