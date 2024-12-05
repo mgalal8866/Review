@@ -9,4 +9,8 @@ class Service extends Model
 {
     use HasFactory;
     protected $fillable = ['name', 'image'];
+    public function reviews()
+    {
+        return $this->morphMany(Review::class, 'reviewable');
+    }
 }
