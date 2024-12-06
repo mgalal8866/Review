@@ -46,6 +46,8 @@ class ReviewResource extends Resource
                
                 Forms\Components\TextInput::make('rating')
                     ->required()
+                    ->minValue(1)
+                    ->maxValue(5)
                     ->numeric()
                     ,
                 Forms\Components\Textarea::make('comment')

@@ -13,13 +13,7 @@ class CreateReview extends CreateRecord
     protected function getFormSchema(): array
     {
         return [
-            Select::make('reviewable_type')
-                ->label('Reviewable Type')
-                ->options([
-                    'App\\Models\\Post' => 'Post',
-                    'App\\Models\\Product' => 'Product',
-                ])
-                ->required(),
+             
             Select::make('reviewable_id')
                 ->label('Reviewable Item')
                 ->required()
