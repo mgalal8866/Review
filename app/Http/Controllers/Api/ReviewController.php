@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\Review;
 use App\Models\Service;
 use App\Models\Store;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
@@ -20,11 +21,12 @@ class ReviewController extends Controller
 
        $request->validate([
             'comment' => 'required|string|max:1000',
-            'rating'  => 'required|string|min:1|max:5'
+            'rating'  => 'required|string|min:1|max:5',
+           
         ]);
 
 
-        $modelclass = $this->SelectModel($type);
+        $modelclass = Relation::getMorphedModel($type);
 
 
 
@@ -36,7 +38,7 @@ class ReviewController extends Controller
 
         if ($reviewexist) {
 
-            return response()->json(['message' => 'You can only review this item once', 'status' => 'error', 'code' => 200]);
+            return response()->json(['message' => 'You can only review this item once', 'status' => 'error', 'code' => 400]);
         }
 
         $model = $modelclass::findOrFail($id);
@@ -50,12 +52,5 @@ class ReviewController extends Controller
 
         return response()->json(['data' => $review, 'message' => 'Created Success ', 'status' => 'success', 'code' => 200]);
     }
-    public function SelectModel($type)
-    {
-        return match ($type) {
-            'product' => Product::class,
-            'store'   => Store::class,
-            'servies' => Service::class,
-        };
-    }
+  
 }
