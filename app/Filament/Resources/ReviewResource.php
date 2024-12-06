@@ -3,15 +3,19 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ReviewResource\Pages;
-use App\Filament\Resources\ReviewResource\RelationManagers;
+ 
+use App\Models\Product;
 use App\Models\Review;
+use App\Models\Service;
+use App\Models\Store;
+use App\Models\User;
 use Filament\Forms;
+use Filament\Forms\Components\BelongsToSelect;
+use Filament\Forms\Components\MorphToSelect;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ReviewResource extends Resource
 {
@@ -23,18 +27,27 @@ class ReviewResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('reviewable_type')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('reviewable_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('user_id')
-                    ->required()
-                    ->numeric(),
+                BelongsToSelect::make('user_id')
+                ->relationship('user', 'name') // Assumes a 'user' relationship exists
+                ->label('User')
+                ->required(),
+                MorphToSelect::make('reviewable')
+                ->types([
+                    MorphToSelect\Type::make(Product::class)
+                        ->titleAttribute('name'),
+                    MorphToSelect\Type::make(Service::class)
+                        ->titleAttribute('name'), 
+                    MorphToSelect\Type::make(Store::class)
+                        ->titleAttribute('name'), 
+
+                ])
+                ->label('Reviewable Item')
+                ->required(),
+               
                 Forms\Components\TextInput::make('rating')
                     ->required()
-                    ->numeric(),
+                    ->numeric()
+                    ,
                 Forms\Components\Textarea::make('comment')
                     ->columnSpanFull(),
             ]);
